@@ -9,6 +9,7 @@ interface AuthContextType {
     token: string | null;
     user: User | null;
     login: (username: string, password: string) => Promise<void>;
+    register: (username: string, password: string) => Promise<void>;
     logout: () => void;
     isLoading: boolean;
 }
@@ -70,6 +71,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
     };
 
+    const register = async (username: string, password: string) => {
+        setIsLoading(true);
+        try {
+            const response = await fetch('http://localhost:8000/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Registration failed');
+            }
+
+            // After successful registration, automatically log in
+            await login(username, password);
+        } catch (error) {
+            console.error(error);
+            throw error; // Re-throw for the component to handle
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const fetchUser = async (accessToken: string) => {
         try {
             const response = await fetch('http://localhost:8000/users/me', {
@@ -97,7 +124,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ token, user, login, logout, isLoading }}>
+        <AuthContext.Provider value={{ token, user, login, register, logout, isLoading }}>
             {children}
         </AuthContext.Provider>
     );

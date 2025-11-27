@@ -1,6 +1,6 @@
 import React from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import Login from './components/Login';
+import Auth from './components/Auth';
 
 const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
@@ -29,7 +29,7 @@ const AppContent: React.FC = () => {
   const { token } = useAuth();
   // If token exists, we show Dashboard. 
   // In a real app, you might verify validity or validity expiry here as well.
-  return token ? <Dashboard /> : <Login />;
+  return token ? <Dashboard /> : <Auth />;
 };
 
 export default function App() {
