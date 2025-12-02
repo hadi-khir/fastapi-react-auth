@@ -5,7 +5,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 
 export default function Auth() {
-    const [isLogin, setIsLogin] = useState<boolean>(false); // Start with register view
+    const [isLogin, setIsLogin] = useState<boolean>(false);
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const { login, register, isLoading } = useAuth();
@@ -49,6 +49,7 @@ export default function Auth() {
                     <CardContent>
                         <form onSubmit={handleSubmit} className="space-y-3">
                             <div className="space-y-1">
+                                <label htmlFor="username">Username</label>
                                 <Input
                                     id="username"
                                     type="text"
@@ -60,6 +61,7 @@ export default function Auth() {
                                 />
                             </div>
                             <div className="space-y-1">
+                                <label htmlFor="password">Password</label>
                                 <Input
                                     id="password"
                                     type="password"
