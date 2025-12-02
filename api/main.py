@@ -81,3 +81,28 @@ def read_users_me(token: str = Depends(oauth2_scheme), db: Session = Depends(dat
         raise credentials_exception
         
     return {"username": user.username, "id": user.id}
+
+# Serve React App
+import os
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+# Mount the static directory (built React app)
+# We assume the build output is in ../ui/dist relative to this file
+static_dir = os.path.join(os.path.dirname(__file__), "../ui/dist")
+
+if os.path.exists(static_dir):
+    app.mount("/assets", StaticFiles(directory=os.path.join(static_dir, "assets")), name="assets")
+    
+    # Catch-all for SPA
+    @app.get("/{full_path:path}")
+    async def serve_react_app(full_path: str):
+        # If the file exists in static_dir, serve it (e.g. favicon.ico)
+        file_path = os.path.join(static_dir, full_path)
+        if os.path.isfile(file_path):
+            return FileResponse(file_path)
+            
+        # Otherwise serve index.html
+        return FileResponse(os.path.join(static_dir, "index.html"))
+else:
+    print(f"Warning: Static directory {static_dir} does not exist. Run 'npm run build' in ui directory.")
